@@ -3,19 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Support\ServiceTypeOptions;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {
-    private const SERVICE_TYPES = [
-        'Wash • Dry • Fold (Minimum 8 kg)',
-        'Wash Only (Minimum 8 kg)',
-        'Dry Only (Minimum 8 kg)',
-        'Heavy Items (Min. 5 kg)',
-        'Comforter (1 pc per load)',
-    ];
-
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +28,7 @@ class BookingController extends Controller
      */
     public function create()
     {
-        return view('bookings.create', ['serviceTypes' => self::SERVICE_TYPES]);
+        return view('bookings.create', ['serviceTypes' => ServiceTypeOptions::all()]);
     }
 
     /**
@@ -43,9 +36,12 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
+        $minimumSchedule = now()->startOfMinute();
+        $serviceTypes = ServiceTypeOptions::all();
+
         $validated = $request->validate([
-            'service_type' => ['required', Rule::in(self::SERVICE_TYPES)],
-            'scheduled_at' => ['required', 'date', 'after_or_equal:now'],
+            'service_type' => ['required', Rule::in($serviceTypes)],
+            'scheduled_at' => ['required', 'date', 'after_or_equal:'.$minimumSchedule->format('Y-m-d H:i:s')],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
@@ -81,7 +77,7 @@ class BookingController extends Controller
 
         return view('bookings.edit', [
             'booking' => $booking,
-            'serviceTypes' => self::SERVICE_TYPES,
+            'serviceTypes' => ServiceTypeOptions::all(),
         ]);
     }
 
@@ -93,9 +89,12 @@ class BookingController extends Controller
         abort_if($booking->user_id !== auth()->id(), 403);
         abort_if($booking->status !== 'pending', 422, 'Only pending bookings can be edited.');
 
+        $minimumSchedule = now()->startOfMinute();
+        $serviceTypes = ServiceTypeOptions::all();
+
         $validated = $request->validate([
-            'service_type' => ['required', Rule::in(self::SERVICE_TYPES)],
-            'scheduled_at' => ['required', 'date', 'after_or_equal:now'],
+            'service_type' => ['required', Rule::in($serviceTypes)],
+            'scheduled_at' => ['required', 'date', 'after_or_equal:'.$minimumSchedule->format('Y-m-d H:i:s')],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 

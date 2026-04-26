@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <label class="text-sm font-medium text-slate-700">Schedule</label>
-                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" required class="rbj-input">
+                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" min="{{ now()->startOfMinute()->format('Y-m-d\\TH:i') }}" required class="rbj-input">
                     @error('scheduled_at') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                 </div>
                 <div>

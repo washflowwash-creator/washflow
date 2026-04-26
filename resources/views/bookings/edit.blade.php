@@ -18,7 +18,7 @@
                 </div>
                 <div>
                     <label class="text-sm font-medium text-slate-700">Schedule</label>
-                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at', $booking->scheduled_at?->format('Y-m-d\\TH:i')) }}" required class="rbj-input">
+                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at', $booking->scheduled_at?->format('Y-m-d\\TH:i')) }}" min="{{ now()->startOfMinute()->format('Y-m-d\\TH:i') }}" required class="rbj-input">
                 </div>
                 <div>
                     <label class="text-sm font-medium text-slate-700">Notes</label>

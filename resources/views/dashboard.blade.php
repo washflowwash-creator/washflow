@@ -41,11 +41,25 @@
                 <section class="grid gap-5 lg:grid-cols-3">
                     <article class="rbj-panel p-5 lg:col-span-2">
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-sky-900">Active Orders</h3>
+                            <h3 class="text-lg font-semibold text-sky-900">Active Requests</h3>
                             <a href="{{ route('customer.portal') }}" class="rbj-btn-outline">My Orders</a>
                         </div>
 
                         <div class="space-y-4">
+                            @forelse ($recentBookings as $booking)
+                                <div class="rounded-2xl border border-sky-100 p-4">
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <p class="font-medium text-slate-700">Booking #{{ $booking->id }} - {{ $booking->service_type }}</p>
+                                        <span class="{{ $statusClass($booking->status) }}">{{ $booking->status }}</span>
+                                    </div>
+                                    <div class="mt-3 h-2 w-full rounded-full bg-sky-100">
+                                        <div class="h-2 rounded-full bg-gradient-to-r from-sky-400 to-blue-600" style="width: {{ $progress($booking->status) }}%"></div>
+                                    </div>
+                                    <p class="mt-2 text-xs text-slate-500">Waiting for staff confirmation and order creation.</p>
+                                </div>
+                            @empty
+                            @endforelse
+
                             @forelse ($recentOrders as $order)
                                 <div class="rounded-2xl border border-sky-100 p-4">
                                     <div class="flex flex-wrap items-center justify-between gap-2">
@@ -58,7 +72,9 @@
                                     <p class="mt-2 text-xs text-slate-500">PHP {{ number_format($order->total_cost, 2) }} - Payment: {{ $order->payment?->payment_status ?? 'unpaid' }}</p>
                                 </div>
                             @empty
-                                <p class="rounded-2xl border border-dashed border-sky-200 p-4 text-sm text-slate-500">No active orders yet.</p>
+                                @if ($recentBookings->isEmpty())
+                                    <p class="rounded-2xl border border-dashed border-sky-200 p-4 text-sm text-slate-500">No active requests yet.</p>
+                                @endif
                             @endforelse
                         </div>
                     </article>
@@ -70,21 +86,25 @@
                             <div>
                                 <label class="text-sm font-medium text-slate-700">Service Type</label>
                                 <select name="service_type" class="rbj-input" required>
-                                    <option value="Wash and Fold">Wash and Fold</option>
-                                    <option value="Wash and Dry">Wash and Dry</option>
-                                    <option value="Premium Care">Premium Care</option>
+                                    <option value="">Select service</option>
+                                    @foreach ($serviceTypes as $serviceType)
+                                        <option value="{{ $serviceType }}" @selected(old('service_type') === $serviceType)>{{ $serviceType }}</option>
+                                    @endforeach
                                 </select>
+                                @error('service_type') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
                                 <label class="text-sm font-medium text-slate-700">Pickup or Drop-off</label>
                                 <select name="notes" class="rbj-input">
-                                    <option value="Pickup">Pickup</option>
-                                    <option value="Drop-off">Drop-off</option>
+                                    <option value="Pickup" @selected(old('notes') === 'Pickup')>Pickup</option>
+                                    <option value="Drop-off" @selected(old('notes') === 'Drop-off')>Drop-off</option>
                                 </select>
+                                @error('notes') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
                                 <label class="text-sm font-medium text-slate-700">Date and Time</label>
-                                <input type="datetime-local" name="scheduled_at" class="rbj-input" required>
+                                <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" min="{{ now()->startOfMinute()->format('Y-m-d\\TH:i') }}" class="rbj-input" required>
+                                @error('scheduled_at') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                             </div>
                             <button class="rbj-btn-primary w-full" type="submit">Submit Booking</button>
                         </form>

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\Transaction;
+use App\Support\ServiceTypeOptions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -17,10 +19,17 @@ class DashboardController extends Controller
 
         $ordersQuery = Order::query();
         $transactionsQuery = Transaction::query();
+        $recentBookings = collect();
 
         if ($user->isCustomer()) {
             $ordersQuery->where('user_id', $user->id);
             $transactionsQuery->where('user_id', $user->id);
+            $recentBookings = Booking::query()
+                ->where('user_id', $user->id)
+                ->whereDoesntHave('order')
+                ->latest()
+                ->take(8)
+                ->get();
         }
 
         $recentOrders = (clone $ordersQuery)
@@ -35,11 +44,13 @@ class DashboardController extends Controller
             'completedCount' => (clone $ordersQuery)->whereDate('created_at', $today)->where('status', 'completed')->count(),
             'revenue' => $transactionsQuery->whereDate('created_at', $today)->sum('amount'),
             'recentOrders' => $recentOrders,
+            'recentBookings' => $recentBookings,
             'lowStockItems' => Inventory::query()
                 ->whereColumn('quantity', '<=', 'low_stock_threshold')
                 ->orderBy('quantity')
                 ->take(5)
                 ->get(),
+            'serviceTypes' => ServiceTypeOptions::all(),
         ]);
     }
 }
