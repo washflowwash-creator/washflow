@@ -78,7 +78,7 @@
                         </div>
                     </div>
                     <div class="rbj-panel p-5 sm:p-7">
-                        <img src="{{ Vite::asset('resources/asset/front.jpg') }}" alt="RBJ Laundry Shop" class="mx-auto h-48 w-full rounded-2xl object-cover sm:h-60" />
+                        <img src="{{ asset('asset/front.jpg') }}" alt="RBJ Laundry Shop" class="mx-auto h-48 w-full rounded-2xl object-cover sm:h-60" />
                         <div class="mt-4 grid gap-3 sm:grid-cols-2">
                             <div class="rounded-2xl border border-sky-100 bg-sky-50/80 p-4">
                                 <p class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-600">Service Highlight</p>
