@@ -12,7 +12,7 @@
         <header x-data="{open:false}" class="sticky top-0 z-30 border-b border-sky-100 bg-white/85 backdrop-blur">
             <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <img src="{{ Vite::asset('resources/asset/logo.jpg') }}" alt="RBJ Laundry Shop" class="h-11 w-11 rounded-2xl border border-sky-200 object-cover shadow-sm" />
+                    <img src="{{ Vite::asset('asset/logo.jpg') }}" alt="RBJ Laundry Shop" class="h-11 w-11 rounded-2xl border border-sky-200 object-cover shadow-sm" />
                     <div>
                         <p class="text-base font-semibold text-sky-900">RBJ Laundry Shop</p>
                         <p class="text-xs text-sky-700">Clean Made Easy</p>
