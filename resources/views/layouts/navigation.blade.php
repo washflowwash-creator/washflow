@@ -1,7 +1,7 @@
 <nav x-data="{ open: false }" class="sticky top-0 z-40 border-b border-sky-100 bg-white/85 backdrop-blur">
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-            <img src="{{ Vite::asset('resources/asset/logo.jpg') }}" alt="RBJ Laundry Shop" class="h-10 w-10 rounded-2xl border border-sky-200 object-cover" />
+            <img src="{{ asset('asset/logo.jpg') }}" alt="RBJ Laundry Shop" class="h-10 w-10 rounded-2xl border border-sky-200 object-cover" />
             <div>
                 <p class="text-sm font-semibold text-sky-900">RBJ Laundry Shop</p>
                 <p class="text-[11px] text-sky-700">Operations</p>

@@ -24,7 +24,7 @@
 
             <div class="relative z-10 w-full max-w-md">
                 <a href="/" class="mb-5 flex items-center justify-center gap-3 text-white">
-                    <img src="{{ Vite::asset('resources/asset/logo.jpg') }}" alt="RBJ Laundry Shop Logo" class="h-16 w-16 rounded-2xl border border-white/50 object-cover shadow-lg" />
+                    <img src="{{ asset('asset/logo.jpg') }}" alt="RBJ Laundry Shop Logo" class="h-16 w-16 rounded-2xl border border-white/50 object-cover shadow-lg" />
                     <div>
                         <p class="text-lg font-semibold tracking-wide">RBJ Laundry Shop</p>
                         <p class="text-xs text-white/85">Clean Made Easy</p>

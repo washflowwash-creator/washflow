@@ -10,7 +10,7 @@
     <div class="mx-auto max-w-2xl rbj-card p-6">
         <div class="flex items-center justify-between border-b border-sky-100 pb-4">
             <div class="flex items-center gap-3">
-                <img src="{{ Vite::asset('resources/asset/logo.jpg') }}" alt="RBJ Laundry Shop" class="h-14 w-14 rounded-2xl border border-sky-200 object-cover">
+                <img src="{{ asset('asset/logo.jpg') }}" alt="RBJ Laundry Shop" class="h-14 w-14 rounded-2xl border border-sky-200 object-cover">
                 <div>
                     <h1 class="text-lg font-bold text-sky-900">RBJ Laundry Shop</h1>
                     <p class="text-sm text-slate-600">Official Receipt</p>
