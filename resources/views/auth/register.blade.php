@@ -22,9 +22,10 @@
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" class="text-slate-700" />
 
-            <div x-data="{ showPassword: false }" class="relative">
+            <div x-data="{ showPassword: false, password: '' }" class="relative">
                 <x-text-input id="password" class="rbj-input block pr-12"
                                 x-bind:type="showPassword ? 'text' : 'password'"
+                                x-model="password"
                                 name="password"
                                 required autocomplete="new-password" />
                 <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 flex items-center px-4 text-sky-600" x-bind:aria-label="showPassword ? 'Hide password' : 'Show password'">
@@ -42,6 +43,14 @@
             </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <div class="mt-2 text-sm text-slate-600" x-data>
+                <ul class="space-y-1">
+                    <li :class="{ 'text-emerald-600': password.length >= 10 }">Minimum 10 characters</li>
+                    <li :class="{ 'text-emerald-600': /[A-Z]/.test(password) && /[a-z]/.test(password) }">Uppercase and lowercase letters</li>
+                    <li :class="{ 'text-emerald-600': /[0-9]/.test(password) }">At least one number</li>
+                    <li :class="{ 'text-emerald-600': /[^A-Za-z0-9]/.test(password) }">At least one special character</li>
+                </ul>
+            </div>
         </div>
 
         <div class="mt-4">

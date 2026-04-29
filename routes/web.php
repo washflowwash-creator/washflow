@@ -34,12 +34,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/{order}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
         Route::resource('orders', OrderController::class);
         Route::resource('payments', PaymentController::class);
+        Route::post('/payments/{payment}/apply-reward', [PaymentController::class, 'applyReward'])->name('payments.apply-reward');
         Route::resource('inventories', InventoryController::class);
         Route::get('/service-rates', [ServiceRateController::class, 'index'])->name('service-rates.index');
         Route::post('/service-rates/bulk-update', [ServiceRateController::class, 'bulkUpdate'])->name('service-rates.bulk-update');
         Route::patch('/service-rates/{serviceRate}', [ServiceRateController::class, 'update'])->name('service-rates.update');
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])->name('reports.export.csv');
+        // Admin shop settings
+        Route::get('/admin/shop-settings', [\App\Http\Controllers\Admin\ShopSettingController::class, 'edit'])->name('admin.shop-settings.edit');
+        Route::patch('/admin/shop-settings', [\App\Http\Controllers\Admin\ShopSettingController::class, 'update'])->name('admin.shop-settings.update');
+        // Admin loyalty monitoring
+        Route::get('/admin/loyalty', [\App\Http\Controllers\Admin\LoyaltyMonitorController::class, 'index'])->name('admin.loyalty.index');
+        Route::get('/admin/loyalty/{user}', [\App\Http\Controllers\Admin\LoyaltyMonitorController::class, 'show'])->name('admin.loyalty.show');
     });
 });
 

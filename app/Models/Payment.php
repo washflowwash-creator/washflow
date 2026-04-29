@@ -16,6 +16,8 @@ class Payment extends Model
         'payment_method',
         'payment_status',
         'amount',
+        'discount_amount',
+        'reward_redeemed',
         'paid_at',
         'reference',
     ];

@@ -28,7 +28,10 @@ class BookingController extends Controller
      */
     public function create()
     {
-        return view('bookings.create', ['serviceTypes' => ServiceTypeOptions::all()]);
+        $serviceTypes = ServiceTypeOptions::all();
+        $shop = \App\Models\ShopSetting::current();
+
+        return view('bookings.create', compact('serviceTypes', 'shop'));
     }
 
     /**

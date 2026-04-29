@@ -14,6 +14,19 @@
                 <p class="mt-2"><span class="font-semibold">Service:</span> {{ $order->booking->service_type ?? '-' }}</p>
                 <p class="mt-2"><span class="font-semibold">Current Status:</span> <span class="capitalize">{{ $order->status }}</span></p>
                 <p class="mt-2"><span class="font-semibold">Total:</span> PHP {{ number_format($order->total_cost, 2) }}</p>
+                <p class="mt-2"><span class="font-semibold">Order Created:</span> {{ $order->created_at?->format('M d, Y h:i A') ?? '-' }}</p>
+                <p class="mt-2"><span class="font-semibold">Scheduled At:</span> {{ $order->scheduled_at?->format('M d, Y h:i A') ?? '-' }}</p>
+                <p class="mt-2"><span class="font-semibold">Estimated Completion:</span> {{ $order->estimated_completed_at?->format('M d, Y h:i A') ?? '-' }}</p>
+                <p class="mt-2"><span class="font-semibold">Completed At:</span> {{ $order->completed_at?->format('M d, Y h:i A') ?? '-' }}</p>
+
+                <div class="mt-4">
+                    <h5 class="font-semibold">Payment</h5>
+                    <p class="text-sm">Status: {{ $order->payment?->payment_status ?? 'unpaid' }}</p>
+                    <p class="text-sm">Amount: PHP {{ number_format($order->payment?->amount ?? 0, 2) }}</p>
+                    <p class="text-sm">Method: {{ $order->payment?->payment_method ?? '-' }}</p>
+                    <p class="text-sm">Paid At: {{ $order->payment?->paid_at?->format('M d, Y h:i A') ?? '-' }}</p>
+                    <p class="text-sm">Reference: {{ $order->payment?->reference ?? '-' }}</p>
+                </div>
 
                 <div class="mt-4">
                     <a href="{{ route('orders.receipt', $order) }}" class="rbj-btn-outline">Print Receipt</a>

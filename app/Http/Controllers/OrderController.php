@@ -7,6 +7,7 @@ use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\ServiceRate;
 use App\Models\Transaction;
+use App\Services\LoyaltyRewardService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,6 +96,11 @@ class OrderController extends Controller
             'inventory_deduction_json' => empty($deductions) ? null : json_encode($deductions),
         ]);
 
+        // assign readable order number and estimated completion
+        $order->order_number = 'WF'.str_pad($order->id, 6, '0', STR_PAD_LEFT);
+        $order->estimated_completed_at = $order->estimateCompletion();
+        $order->save();
+
         $booking->update(['status' => 'picked-up']);
 
         return redirect()->route('orders.show', $order)->with('success', 'Order created successfully.');
@@ -159,6 +165,8 @@ class OrderController extends Controller
 
             if ($validated['status'] === 'completed') {
                 $order->booking->update(['status' => 'completed']);
+                $order->completed_at = now();
+                $order->save();
 
                 Transaction::updateOrCreate(
                     ['order_id' => $order->id],
@@ -169,6 +177,9 @@ class OrderController extends Controller
                         'completed_at' => now(),
                     ]
                 );
+
+                // award loyalty stamp on completion
+                (new LoyaltyRewardService())->awardStamp($order->user);
             } else {
                 $order->booking->update(['status' => $validated['status']]);
             }

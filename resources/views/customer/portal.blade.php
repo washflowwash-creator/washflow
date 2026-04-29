@@ -52,6 +52,27 @@
                     <p class="mt-3 text-xs text-slate-500">Tracking refreshes on page reload, keeping the setup simple and free.</p>
                 </div>
             </div>
+            <div class="grid gap-6 lg:grid-cols-3 mt-6">
+                <div>
+                    @include('components.loyalty-card', ['stamps' => $loyalty->stamps ?? 0, 'rewardRedeemed' => $loyalty->reward_redeemed_at ?? null])
+                </div>
+                <div class="rbj-card p-5">
+                    <h4 class="text-base font-semibold text-sky-900">Service Price List</h4>
+                    <ul class="mt-3 text-sm space-y-2">
+                        @foreach($serviceRates as $rate)
+                            <li class="flex justify-between border-b pb-2">
+                                <span>{{ $rate->service_type }}</span>
+                                <span>PHP {{ number_format($rate->price_per_kg, 2) }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                <div class="rbj-card p-5">
+                    <h4 class="text-base font-semibold text-sky-900">Shop Availability</h4>
+                    <p class="mt-2 text-sm">Status: <strong>{{ $shop->status }}</strong></p>
+                    <p class="mt-1 text-sm">Capacity: {{ $shop->current_active_loads }} / {{ $shop->capacity }}</p>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

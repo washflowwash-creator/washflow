@@ -117,6 +117,31 @@ class PaymentController extends Controller
     }
 
     /**
+     * Apply loyalty reward (50% OFF) to a payment
+     */
+    public function applyReward(Payment $payment)
+    {
+        $user = $payment->order->user;
+        $loyaltyService = new \App\Services\LoyaltyRewardService();
+
+        if (! $loyaltyService->hasAvailableReward($user)) {
+            return back()->with('error', 'No available reward for this customer.');
+        }
+
+        $discountAmount = (float) ($payment->order->total_cost / 2);
+        $payment->update([
+            'discount_amount' => $discountAmount,
+            'amount' => max(0, (float) $payment->order->total_cost - $discountAmount),
+            'reward_redeemed' => true,
+        ]);
+
+        // redeem the loyalty card
+        $loyaltyService->redeemReward($user);
+
+        return back()->with('success', 'Reward applied: 50% OFF discount applied to this payment.');
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Payment $payment)
