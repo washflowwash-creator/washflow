@@ -239,12 +239,22 @@ git push -u origin main
 ### C. Deploy on Railway
 
 1. Create a new Railway project from GitHub repo.
-2. Add MySQL plugin (or connect external PlanetScale).
-3. Configure environment variables as listed above.
-4. Add build and start commands similarly.
-5. Run migrations:
-	 - php artisan migrate --force
-	 - php artisan db:seed --force
+2. Add a Railway MySQL service or connect external PlanetScale.
+3. Set the app variables below in Railway:
+	 - APP_NAME=WashFlow
+	 - APP_ENV=production
+	 - APP_DEBUG=false
+	 - APP_URL=https://your-railway-domain.up.railway.app
+	 - APP_KEY=base64:...
+	 - DB_CONNECTION=mysql
+	 - DB_URL=${{MySQL.DATABASE_URL}}
+	 - LOG_CHANNEL=stderr
+	 - LOG_STDERR_FORMATTER=\Monolog\Formatter\JsonFormatter
+	 - SESSION_DRIVER=database
+	 - CACHE_STORE=database
+	 - QUEUE_CONNECTION=database
+4. Railway will use [railway.json](railway.json) to build the frontend and run the pre-deploy script in [railway/init-app.sh](railway/init-app.sh).
+5. If you need seed data, run `php artisan db:seed --force` from a Railway shell after the first deploy.
 
 ### D. PlanetScale MySQL Compatibility
 
@@ -256,9 +266,15 @@ git push -u origin main
 
 - Set APP_ENV=production
 - Set APP_DEBUG=false
-- Configure SESSION_DRIVER=database or file
-- Configure CACHE_STORE=file or database
+- Set LOG_CHANNEL=stderr for Railway logs
+- Use DB_CONNECTION=mysql with the Railway MySQL URL
+- Keep SESSION_DRIVER=database, CACHE_STORE=database, and QUEUE_CONNECTION=database for Railway
 - Run php artisan config:cache after env setup
+## 8. Railway Deployment Notes
+
+- The app service is configured through [railway.json](railway.json).
+- The pre-deploy bootstrap script lives at [railway/init-app.sh](railway/init-app.sh).
+- Route caching is now safe because the landing page uses `Route::view()` instead of a closure.
 
 ## 9. Future Improvements
 
