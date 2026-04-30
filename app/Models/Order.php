@@ -32,14 +32,14 @@ class Order extends Model
         'inventory_deduction_json',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'weight_kg' => 'decimal:2',
-            'unit_price' => 'decimal:2',
-            'total_cost' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'weight_kg' => 'decimal:2',
+        'unit_price' => 'decimal:2',
+        'total_cost' => 'decimal:2',
+        'scheduled_at' => 'datetime',
+        'estimated_completed_at' => 'datetime',
+        'completed_at' => 'datetime',
+    ];
 
     public function booking(): BelongsTo
     {

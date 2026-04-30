@@ -29,8 +29,9 @@
                         <input type="number" step="0.01" min="0" name="weight_kg" value="{{ old('weight_kg', 0) }}" class="rbj-input">
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-slate-700">Unit Price</label>
+                        <label class="text-sm font-medium text-slate-700">Rate / Pack Price</label>
                         <input id="unit_price" type="number" step="0.01" min="0" name="unit_price" value="{{ old('unit_price', 0) }}" required class="rbj-input">
+                        <p class="text-xs text-slate-500 mt-1">Admin rates may be per-kg or a pack price (e.g. PHP 99 for 8 kg). The system applies minimum-pack pricing automatically.</p>
                     </div>
                 </div>
                 <div>

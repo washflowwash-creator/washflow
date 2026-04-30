@@ -28,6 +28,16 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+         User::query()->updateOrCreate(
+            ['email' => 'admins@washflow.test'],
+            [
+                'name' => 'WashFlow Admin',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+
         User::query()->updateOrCreate(
             ['email' => 'staff@washflow.test'],
             [

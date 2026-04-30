@@ -79,7 +79,13 @@ class OrderController extends Controller
         $defaultRate = (float) ServiceRate::query()
             ->where('service_type', $booking->service_type)
             ->value('price_per_kg');
-        $unitPrice = (float) ($validated['unit_price'] ?? $defaultRate);
+
+        // Determine pricing when service has a minimum pack (e.g. "Minimum 8 kg").
+        [$unitPrice, $totalCost] = $this->calculatePricingForService(
+            $booking->service_type,
+            (float) ($validated['unit_price'] ?? $defaultRate),
+            $weightKg
+        );
 
         $deductions = collect($validated['inventory_items'] ?? [])
             ->filter(fn ($qty): bool => is_numeric($qty) && (float) $qty > 0)
@@ -92,7 +98,7 @@ class OrderController extends Controller
             'status' => 'pending',
             'weight_kg' => $weightKg,
             'unit_price' => $unitPrice,
-            'total_cost' => $weightKg * $unitPrice,
+            'total_cost' => $totalCost,
             'inventory_deduction_json' => empty($deductions) ? null : json_encode($deductions),
         ]);
 
@@ -144,13 +150,19 @@ class OrderController extends Controller
             $oldStatus = $order->status;
 
             $weightKg = (float) ($validated['weight_kg'] ?? $order->weight_kg ?? 0);
-            $unitPrice = (float) ($validated['unit_price'] ?? $order->unit_price ?? 0);
+            $unitPriceInput = (float) ($validated['unit_price'] ?? $order->unit_price ?? 0);
+
+            [$unitPrice, $totalCost] = $this->calculatePricingForService(
+                $order->booking->service_type,
+                $unitPriceInput,
+                $weightKg
+            );
 
             $order->update([
                 'status' => $validated['status'],
                 'weight_kg' => $weightKg,
                 'unit_price' => $unitPrice,
-                'total_cost' => $weightKg * $unitPrice,
+                'total_cost' => $totalCost,
                 'inventory_deduction_json' => empty($validated['inventory_items'] ?? [])
                     ? $order->inventory_deduction_json
                     : json_encode(collect($validated['inventory_items'])
@@ -255,5 +267,60 @@ class OrderController extends Controller
             ->filter(fn ($qty, $item): bool => (is_numeric($item) || is_string($item)) && is_numeric($qty))
             ->map(fn ($qty): float => (float) $qty)
             ->all();
+    }
+
+    /**
+     * Extract minimum-pack information from a service type string.
+     * Returns ['min' => ?float, 'per_pack' => bool]
+     */
+    private function extractServiceMinInfo(string $serviceType): array
+    {
+        $lower = strtolower($serviceType);
+
+        $min = null;
+        if (preg_match('/(\d+)\s*(?:kg)\b/i', $serviceType, $m)) {
+            $min = (float) $m[1];
+        }
+
+        $perPack = false;
+        if (str_contains($lower, 'per load') || str_contains($lower, '1 pc') || str_contains($lower, 'comforter') || str_contains($lower, 'per pack') || str_contains($lower, 'minimum')) {
+            // treat named minimums and comforter as pack-style pricing when appropriate
+            $perPack = str_contains($lower, 'per load') || str_contains($lower, '1 pc') || str_contains($lower, 'comforter');
+            // if text mentions "minimum" but no explicit per-load phrasing, still use min
+            if ($min === null && preg_match('/minimum\s*(\d+)\s*kg/i', $serviceType, $mm)) {
+                $min = (float) $mm[1];
+            }
+        }
+
+        return ['min' => $min, 'per_pack' => $perPack];
+    }
+
+    /**
+     * Calculate unit price (per-kg) and total cost taking into account
+     * minimum-pack pricing where admin may have stored a pack price.
+     * Returns [unitPrice, totalCost].
+     */
+    private function calculatePricingForService(string $serviceType, float $adminPrice, float $weightKg): array
+    {
+        $info = $this->extractServiceMinInfo($serviceType);
+
+        // If there's a minimum weight defined, treat admin price as price for the minimum
+        if ($info['min'] !== null) {
+            // For single-item per-load pricing (comforter / 1 pc per load), charge flat admin price
+            if ($info['per_pack'] && (int) $info['min'] === 1) {
+                $total = max($weightKg, 1) > 0 ? $adminPrice : $adminPrice;
+                return [$adminPrice, $total];
+            }
+
+            // Otherwise admin price represents the price for the minimum weight (e.g. 99 for 8kg).
+            $unitPerKg = $adminPrice / max(1, $info['min']);
+            $chargeKg = max($weightKg, $info['min']);
+            $total = $chargeKg * $unitPerKg;
+
+            return [$unitPerKg, $total];
+        }
+
+        // default: admin price is per-kg
+        return [$adminPrice, $weightKg * $adminPrice];
     }
 }

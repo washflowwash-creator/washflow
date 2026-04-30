@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\BookingController;
-use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OrderController;
@@ -24,7 +23,6 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:customer')->group(function () {
         Route::resource('bookings', BookingController::class);
-        Route::get('/portal', [CustomerPortalController::class, 'index'])->name('customer.portal');
     });
 
     Route::middleware('role:admin,staff')->group(function () {

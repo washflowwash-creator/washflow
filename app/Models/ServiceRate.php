@@ -14,10 +14,7 @@ class ServiceRate extends Model
         'price_per_kg',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'price_per_kg' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'price_per_kg' => 'decimal:2',
+    ];
 }

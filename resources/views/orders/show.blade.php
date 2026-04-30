@@ -18,6 +18,20 @@
                 <p class="mt-2"><span class="font-semibold">Scheduled At:</span> {{ $order->scheduled_at?->format('M d, Y h:i A') ?? '-' }}</p>
                 <p class="mt-2"><span class="font-semibold">Estimated Completion:</span> {{ $order->estimated_completed_at?->format('M d, Y h:i A') ?? '-' }}</p>
                 <p class="mt-2"><span class="font-semibold">Completed At:</span> {{ $order->completed_at?->format('M d, Y h:i A') ?? '-' }}</p>
+                @php
+                    $serviceType = $order->booking->service_type ?? '';
+                    $adminPrice = \App\Models\ServiceRate::query()->where('service_type', $serviceType)->value('price_per_kg');
+                    // detect minimum pack
+                    preg_match('/(\d+)\s*kg/i', $serviceType, $m);
+                    $minKg = $m[1] ?? null;
+                @endphp
+                <p class="mt-2"><span class="font-semibold">Rate:</span>
+                    @if($minKg && $adminPrice)
+                        PHP {{ number_format((float) $adminPrice, 2) }} (pack price for {{ $minKg }} kg) — effective PHP {{ number_format($order->unit_price, 2) }} / kg
+                    @else
+                        PHP {{ number_format($order->unit_price, 2) }} / kg
+                    @endif
+                </p>
 
                 <div class="mt-4">
                     <h5 class="font-semibold">Payment</h5>

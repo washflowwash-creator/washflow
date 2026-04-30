@@ -27,7 +27,20 @@
             <p><span class="font-semibold">Service:</span> {{ $order->booking->service_type ?? '-' }}</p>
             <p><span class="font-semibold">Status:</span> {{ $order->status }}</p>
             <p><span class="font-semibold">Weight:</span> {{ $order->weight_kg }} kg</p>
-            <p><span class="font-semibold">Rate:</span> PHP {{ number_format($order->unit_price, 2) }} / kg</p>
+            @php
+                $serviceType = $order->booking->service_type ?? '';
+                $adminPrice = \App\Models\ServiceRate::query()->where('service_type', $serviceType)->value('price_per_kg');
+                preg_match('/(\d+)\s*kg/i', $serviceType, $m);
+                $minKg = $m[1] ?? null;
+            @endphp
+            <p>
+                <span class="font-semibold">Rate:</span>
+                @if($minKg && $adminPrice)
+                    PHP {{ number_format((float) $adminPrice, 2) }} (pack price for {{ $minKg }} kg) — effective PHP {{ number_format($order->unit_price, 2) }} / kg
+                @else
+                    PHP {{ number_format($order->unit_price, 2) }} / kg
+                @endif
+            </p>
             <p><span class="font-semibold">Payment Method:</span> {{ $order->payment?->payment_method ?? 'N/A' }}</p>
             <p><span class="font-semibold">Payment Status:</span> {{ $order->payment?->payment_status ?? 'unpaid' }}</p>
         </div>

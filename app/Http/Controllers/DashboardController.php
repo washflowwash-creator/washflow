@@ -20,6 +20,7 @@ class DashboardController extends Controller
         $ordersQuery = Order::query();
         $transactionsQuery = Transaction::query();
         $recentBookings = collect();
+        $loyalty = null;
 
         if ($user->isCustomer()) {
             $ordersQuery->where('user_id', $user->id);
@@ -30,6 +31,8 @@ class DashboardController extends Controller
                 ->latest()
                 ->take(8)
                 ->get();
+
+            $loyalty = $user->loyaltyCard()->first();
         }
 
         $recentOrders = (clone $ordersQuery)
@@ -45,6 +48,7 @@ class DashboardController extends Controller
             'revenue' => $transactionsQuery->whereDate('created_at', $today)->sum('amount'),
             'recentOrders' => $recentOrders,
             'recentBookings' => $recentBookings,
+            'loyalty' => $loyalty,
             'lowStockItems' => Inventory::query()
                 ->whereColumn('quantity', '<=', 'low_stock_threshold')
                 ->orderBy('quantity')

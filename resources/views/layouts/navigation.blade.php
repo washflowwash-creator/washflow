@@ -13,7 +13,6 @@
 
             @if (auth()->user()->role === 'customer')
                 <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">Book Service</x-nav-link>
-                <x-nav-link :href="route('customer.portal')" :active="request()->routeIs('customer.portal')">Track Status</x-nav-link>
             @endif
 
             @if (in_array(auth()->user()->role, ['admin', 'staff'], true))
@@ -55,7 +54,6 @@
 
             @if (auth()->user()->role === 'customer')
                 <x-responsive-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">Book Service</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('customer.portal')" :active="request()->routeIs('customer.portal')">Track Status</x-responsive-nav-link>
             @endif
 
             @if (in_array(auth()->user()->role, ['admin', 'staff'], true))
